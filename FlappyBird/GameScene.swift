@@ -15,12 +15,16 @@ class GameScene: SKScene {
     
     private enum ColliderType: UInt32 {
         case flappyBird = 1
-        case object
+        case object = 2
+        case gap = 4
     }
     
     //----------------------------------
     // MARK: - Properties
     //----------------------------------
+    
+    private let movingObjects = SKSpriteNode()
+    private let labelContainer = SKSpriteNode()
     
     /// Flapp bird node.
     private var flappyBird = SKSpriteNode()
@@ -33,7 +37,13 @@ class GameScene: SKScene {
     private var pipeDown = SKSpriteNode()
     
     private var gameOver = false
-
+    
+    private var score = 0
+    
+    // Labels.
+    private var gameOverLabel = SKLabelNode()
+    private var scoreLabel = SKLabelNode()
+    
     //----------------------------------
     // MARK: - View life cycle
     //----------------------------------
@@ -43,27 +53,46 @@ class GameScene: SKScene {
         
         self.physicsWorld.contactDelegate = self
         
+        self.addChild(movingObjects)
+        self.addChild(labelContainer)
+        
         setupBackgroundNode()
         setupFlappyBirdNode()
         setupGroundNode()
         
         _ = NSTimer.scheduledTimerWithTimeInterval(3, target: self, selector: Selector("setupPipes"), userInfo: nil, repeats: true)
+        
+        setupScoreLabel()
     }
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
-       /* Called when a touch begins */
+        /* Called when a touch begins */
         
-        guard gameOver == false else {
-            return
-        }
-        
-        // Apply impulse.
-        if let physicsBody = self.flappyBird.physicsBody {
-            physicsBody.velocity = CGVectorMake(0.0, 0.0)
-            physicsBody.applyImpulse(CGVectorMake(0.0, 75.0))
+        if gameOver == false {
+            // Apply impulse.
+            if let physicsBody = self.flappyBird.physicsBody {
+                physicsBody.velocity = CGVectorMake(0.0, 0.0)
+                physicsBody.applyImpulse(CGVectorMake(0.0, 75.0))
+            }
+        } else {
+            self.score = 0
+            self.scoreLabel.text = "0"
+            
+            self.flappyBird.position = CGPointMake(CGRectGetMidX(self.frame), CGRectGetMidY(self.frame))
+            self.flappyBird.physicsBody!.velocity = CGVectorMake(0, 0)
+            
+            self.movingObjects.removeAllChildren()
+            
+            setupBackgroundNode()
+            
+            self.speed = 1
+            
+            gameOver = false
+            
+            labelContainer.removeAllChildren()
         }
     }
-   
+    
     override func update(currentTime: CFTimeInterval) {
         /* Called before each frame is rendered */
     }
@@ -86,9 +115,10 @@ class GameScene: SKScene {
             
             self.background.position = CGPoint(x: backgroundTexture.size().width / 2.0 + backgroundTexture.size().width * i, y: CGRectGetMidY(self.frame))
             self.background.size.height = CGRectGetHeight(self.frame)
+            self.background.zPosition = -5
             self.background.runAction(moveBackgroundForever)
             
-            self.addChild(background)
+            self.movingObjects.addChild(background)
         }
     }
     
@@ -109,6 +139,7 @@ class GameScene: SKScene {
         // Create physic body and apply gravity to it.
         self.flappyBird.physicsBody = SKPhysicsBody(circleOfRadius: birdTextureWingsUp.size().height / 2.0)
         self.flappyBird.physicsBody!.dynamic = true
+        self.flappyBird.physicsBody!.allowsRotation = false
         
         // Collision setup.
         self.flappyBird.physicsBody!.categoryBitMask = ColliderType.flappyBird.rawValue
@@ -116,6 +147,15 @@ class GameScene: SKScene {
         self.flappyBird.physicsBody!.collisionBitMask = ColliderType.object.rawValue
         
         self.addChild(flappyBird)
+    }
+    
+    private func setupScoreLabel () {
+        self.scoreLabel.fontName = "Helvetica"
+        self.scoreLabel.fontSize = 60.0
+        self.scoreLabel.text = "0"
+        self.scoreLabel.position = CGPointMake(CGRectGetMidX(self.frame), self.frame.size.height - 70.0)
+        
+        self.addChild(self.scoreLabel)
     }
     
     private func setupGroundNode() {
@@ -159,7 +199,7 @@ class GameScene: SKScene {
         self.pipeUp.physicsBody!.contactTestBitMask = ColliderType.object.rawValue
         self.pipeUp.physicsBody!.collisionBitMask = ColliderType.object.rawValue
         
-        self.addChild(pipeUp)
+        self.movingObjects.addChild(pipeUp)
         
         // Down.
         self.pipeDown = SKSpriteNode(texture: pipeDownTexture)
@@ -173,7 +213,21 @@ class GameScene: SKScene {
         self.pipeDown.physicsBody!.contactTestBitMask = ColliderType.object.rawValue
         self.pipeDown.physicsBody!.collisionBitMask = ColliderType.object.rawValue
         
-        self.addChild(pipeDown)
+        self.movingObjects.addChild(pipeDown)
+        
+        // gap setup.
+        let gap = SKNode()
+        gap.position = CGPointMake(CGRectGetMaxX(self.frame), CGRectGetMidY(self.frame) + pipeOffset)
+        gap.runAction(moveAndRemovePipes)
+        gap.physicsBody = SKPhysicsBody(rectangleOfSize: CGSizeMake(pipeUp.size.width, gapHeight))
+        gap.physicsBody!.dynamic = false
+        
+        // Collision setup.
+        gap.physicsBody!.categoryBitMask = ColliderType.gap.rawValue
+        gap.physicsBody!.contactTestBitMask = ColliderType.flappyBird.rawValue
+        gap.physicsBody!.collisionBitMask = ColliderType.gap.rawValue
+        
+        self.movingObjects.addChild(gap)
     }
 }
 
@@ -183,10 +237,22 @@ class GameScene: SKScene {
 
 extension GameScene: SKPhysicsContactDelegate {
     func didBeginContact(contact: SKPhysicsContact) {
-        print("We have contact!!!")
+        debugPrint("Did collide with contact: \(contact)")
         
-        self.gameOver = true
-        
-        self.speed = 0.0
+        if contact.bodyA.categoryBitMask == ColliderType.gap.rawValue ||
+            contact.bodyB.categoryBitMask == ColliderType.gap.rawValue {
+                self.scoreLabel.text = "\(++score)"
+        } else if gameOver == false {
+            self.gameOver = true
+            
+            self.speed = 0.0
+            
+            self.gameOverLabel.fontName = "Helvetica"
+            self.gameOverLabel.fontSize = 28.0
+            self.gameOverLabel.text = "Game Over! Tap to play againg."
+            gameOverLabel.position = CGPointMake(CGRectGetMidX(self.frame), CGRectGetMidY(self.frame))
+            
+            self.labelContainer.addChild(gameOverLabel)
+        }
     }
 }
