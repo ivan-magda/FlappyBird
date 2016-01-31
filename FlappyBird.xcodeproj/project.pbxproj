@@ -12,8 +12,12 @@
 		75C4A4441C5DE2E2002DA5EB /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75C4A4431C5DE2E2002DA5EB /* GameScene.swift */; };
 		75C4A4461C5DE2E2002DA5EB /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75C4A4451C5DE2E2002DA5EB /* GameViewController.swift */; };
 		75C4A4491C5DE2E2002DA5EB /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 75C4A4471C5DE2E2002DA5EB /* Main.storyboard */; };
-		75C4A44B1C5DE2E2002DA5EB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 75C4A44A1C5DE2E2002DA5EB /* Assets.xcassets */; };
 		75C4A44E1C5DE2E2002DA5EB /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 75C4A44C1C5DE2E2002DA5EB /* LaunchScreen.storyboard */; };
+		75C4A45A1C5DE500002DA5EB /* bg.png in Resources */ = {isa = PBXBuildFile; fileRef = 75C4A4551C5DE500002DA5EB /* bg.png */; };
+		75C4A45B1C5DE500002DA5EB /* flappy1.png in Resources */ = {isa = PBXBuildFile; fileRef = 75C4A4561C5DE500002DA5EB /* flappy1.png */; };
+		75C4A45C1C5DE500002DA5EB /* flappy2.png in Resources */ = {isa = PBXBuildFile; fileRef = 75C4A4571C5DE500002DA5EB /* flappy2.png */; };
+		75C4A45D1C5DE500002DA5EB /* pipe1.png in Resources */ = {isa = PBXBuildFile; fileRef = 75C4A4581C5DE500002DA5EB /* pipe1.png */; };
+		75C4A45E1C5DE500002DA5EB /* pipe2.png in Resources */ = {isa = PBXBuildFile; fileRef = 75C4A4591C5DE500002DA5EB /* pipe2.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -23,9 +27,13 @@
 		75C4A4431C5DE2E2002DA5EB /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
 		75C4A4451C5DE2E2002DA5EB /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
 		75C4A4481C5DE2E2002DA5EB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		75C4A44A1C5DE2E2002DA5EB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		75C4A44D1C5DE2E2002DA5EB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		75C4A44F1C5DE2E2002DA5EB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		75C4A4551C5DE500002DA5EB /* bg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bg.png; sourceTree = "<group>"; };
+		75C4A4561C5DE500002DA5EB /* flappy1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = flappy1.png; sourceTree = "<group>"; };
+		75C4A4571C5DE500002DA5EB /* flappy2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = flappy2.png; sourceTree = "<group>"; };
+		75C4A4581C5DE500002DA5EB /* pipe1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pipe1.png; sourceTree = "<group>"; };
+		75C4A4591C5DE500002DA5EB /* pipe2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pipe2.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,11 +71,23 @@
 				75C4A4431C5DE2E2002DA5EB /* GameScene.swift */,
 				75C4A4451C5DE2E2002DA5EB /* GameViewController.swift */,
 				75C4A4471C5DE2E2002DA5EB /* Main.storyboard */,
-				75C4A44A1C5DE2E2002DA5EB /* Assets.xcassets */,
 				75C4A44C1C5DE2E2002DA5EB /* LaunchScreen.storyboard */,
 				75C4A44F1C5DE2E2002DA5EB /* Info.plist */,
+				75C4A45F1C5DE504002DA5EB /* Images */,
 			);
 			path = FlappyBird;
+			sourceTree = "<group>";
+		};
+		75C4A45F1C5DE504002DA5EB /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				75C4A4551C5DE500002DA5EB /* bg.png */,
+				75C4A4561C5DE500002DA5EB /* flappy1.png */,
+				75C4A4571C5DE500002DA5EB /* flappy2.png */,
+				75C4A4581C5DE500002DA5EB /* pipe1.png */,
+				75C4A4591C5DE500002DA5EB /* pipe2.png */,
+			);
+			name = Images;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -128,10 +148,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				75C4A45C1C5DE500002DA5EB /* flappy2.png in Resources */,
+				75C4A45A1C5DE500002DA5EB /* bg.png in Resources */,
 				75C4A4421C5DE2E2002DA5EB /* GameScene.sks in Resources */,
+				75C4A45D1C5DE500002DA5EB /* pipe1.png in Resources */,
 				75C4A44E1C5DE2E2002DA5EB /* LaunchScreen.storyboard in Resources */,
-				75C4A44B1C5DE2E2002DA5EB /* Assets.xcassets in Resources */,
+				75C4A45E1C5DE500002DA5EB /* pipe2.png in Resources */,
 				75C4A4491C5DE2E2002DA5EB /* Main.storyboard in Resources */,
+				75C4A45B1C5DE500002DA5EB /* flappy1.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
