@@ -14,10 +14,14 @@ class GameScene: SKScene {
     //----------------------------------
     
     /// Flapp bird node.
-    var flappyBird = SKSpriteNode()
+    private var flappyBird = SKSpriteNode()
     
     /// Background node.
-    var background = SKSpriteNode()
+    private var background = SKSpriteNode()
+    
+    // Pipes.
+    private var pipeUp = SKSpriteNode()
+    private var pipeDown = SKSpriteNode()
 
     //----------------------------------
     // MARK: - View life cycle
@@ -29,6 +33,8 @@ class GameScene: SKScene {
         setupBackgroundNode()
         setupFlappyBirdNode()
         setupGroundNode()
+        
+        _ = NSTimer.scheduledTimerWithTimeInterval(3, target: self, selector: Selector("setupPipes"), userInfo: nil, repeats: true)
     }
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
@@ -37,7 +43,7 @@ class GameScene: SKScene {
         // Apply impulse.
         if let physicsBody = self.flappyBird.physicsBody {
             physicsBody.velocity = CGVectorMake(0.0, 0.0)
-            physicsBody.applyImpulse(CGVectorMake(0.0, 50.0))
+            physicsBody.applyImpulse(CGVectorMake(0.0, 75.0))
         }
     }
    
@@ -97,5 +103,35 @@ class GameScene: SKScene {
         groundNode.physicsBody!.dynamic = false
         
         self.addChild(groundNode)
+    }
+    
+    func setupPipes() {
+        // Textures.
+        let pipeUpTexture = SKTexture(imageNamed: "pipe1.png")
+        let pipeDownTexture = SKTexture(imageNamed: "pipe2.png")
+        
+        // Position the pipes.
+        let gapHeight = self.flappyBird.size.height * 4.0
+        let movementAmount = CGFloat(arc4random()) % self.frame.size.height / 2.0
+        let pipeOffset = movementAmount - self.frame.size.height / 4.0
+        
+        // Actions.
+        let movePipes = SKAction.moveByX(-self.frame.size.width * 2.0, y: 0.0, duration: NSTimeInterval(self.frame.size.width / 100.0))
+        let removePipes = SKAction.removeFromParent()
+        let moveAndRemovePipes = SKAction.sequence([movePipes, removePipes])
+        
+        // Up.
+        self.pipeUp = SKSpriteNode(texture: pipeUpTexture)
+        self.pipeUp.position = CGPointMake(CGRectGetMaxX(self.frame), CGRectGetMidY(self.frame) + pipeUpTexture.size().height / 2.0 + gapHeight / 2.0 + pipeOffset)
+        self.pipeUp.runAction(moveAndRemovePipes)
+        
+        self.addChild(pipeUp)
+        
+        // Down.
+        self.pipeDown = SKSpriteNode(texture: pipeDownTexture)
+        self.pipeDown.position = CGPointMake(CGRectGetMaxX(self.frame), CGRectGetMidY(self.frame) - pipeDownTexture.size().height / 2.0 - gapHeight / 2.0 + pipeOffset)
+        self.pipeDown.runAction(moveAndRemovePipes)
+        
+        self.addChild(pipeDown)
     }
 }
