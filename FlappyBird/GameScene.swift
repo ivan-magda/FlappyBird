@@ -28,10 +28,17 @@ class GameScene: SKScene {
         
         setupBackgroundNode()
         setupFlappyBirdNode()
+        setupGroundNode()
     }
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
        /* Called when a touch begins */
+        
+        // Apply impulse.
+        if let physicsBody = self.flappyBird.physicsBody {
+            physicsBody.velocity = CGVectorMake(0.0, 0.0)
+            physicsBody.applyImpulse(CGVectorMake(0.0, 50.0))
+        }
     }
    
     override func update(currentTime: CFTimeInterval) {
@@ -76,6 +83,19 @@ class GameScene: SKScene {
         self.flappyBird.position = CGPoint(x: CGRectGetMidX(self.frame), y: CGRectGetMidY(self.frame))
         self.flappyBird.runAction(makeBirdFlap)
         
+        // Create physic body and apply gravity to it.
+        self.flappyBird.physicsBody = SKPhysicsBody(circleOfRadius: birdTextureWingsUp.size().height / 2.0)
+        self.flappyBird.physicsBody!.dynamic = true
+        
         self.addChild(flappyBird)
+    }
+    
+    private func setupGroundNode() {
+        let groundNode = SKNode()
+        groundNode.position = CGPointMake(0.0, 0.0)
+        groundNode.physicsBody = SKPhysicsBody(rectangleOfSize: CGSizeMake(self.frame.size.width, 1.0))
+        groundNode.physicsBody!.dynamic = false
+        
+        self.addChild(groundNode)
     }
 }
