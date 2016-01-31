@@ -10,6 +10,15 @@ import SpriteKit
 
 class GameScene: SKScene {
     //----------------------------------
+    // MARK: - Types
+    //----------------------------------
+    
+    private enum ColliderType: UInt32 {
+        case flappyBird = 1
+        case object
+    }
+    
+    //----------------------------------
     // MARK: - Properties
     //----------------------------------
     
@@ -22,6 +31,8 @@ class GameScene: SKScene {
     // Pipes.
     private var pipeUp = SKSpriteNode()
     private var pipeDown = SKSpriteNode()
+    
+    private var gameOver = false
 
     //----------------------------------
     // MARK: - View life cycle
@@ -29,6 +40,8 @@ class GameScene: SKScene {
     
     override func didMoveToView(view: SKView) {
         /* Setup your scene here */
+        
+        self.physicsWorld.contactDelegate = self
         
         setupBackgroundNode()
         setupFlappyBirdNode()
@@ -39,6 +52,10 @@ class GameScene: SKScene {
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
        /* Called when a touch begins */
+        
+        guard gameOver == false else {
+            return
+        }
         
         // Apply impulse.
         if let physicsBody = self.flappyBird.physicsBody {
@@ -93,6 +110,11 @@ class GameScene: SKScene {
         self.flappyBird.physicsBody = SKPhysicsBody(circleOfRadius: birdTextureWingsUp.size().height / 2.0)
         self.flappyBird.physicsBody!.dynamic = true
         
+        // Collision setup.
+        self.flappyBird.physicsBody!.categoryBitMask = ColliderType.flappyBird.rawValue
+        self.flappyBird.physicsBody!.contactTestBitMask = ColliderType.object.rawValue
+        self.flappyBird.physicsBody!.collisionBitMask = ColliderType.object.rawValue
+        
         self.addChild(flappyBird)
     }
     
@@ -101,6 +123,11 @@ class GameScene: SKScene {
         groundNode.position = CGPointMake(0.0, 0.0)
         groundNode.physicsBody = SKPhysicsBody(rectangleOfSize: CGSizeMake(self.frame.size.width, 1.0))
         groundNode.physicsBody!.dynamic = false
+        
+        // Collision setup.
+        groundNode.physicsBody!.categoryBitMask = ColliderType.object.rawValue
+        groundNode.physicsBody!.contactTestBitMask = ColliderType.object.rawValue
+        groundNode.physicsBody!.collisionBitMask = ColliderType.object.rawValue
         
         self.addChild(groundNode)
     }
@@ -124,6 +151,13 @@ class GameScene: SKScene {
         self.pipeUp = SKSpriteNode(texture: pipeUpTexture)
         self.pipeUp.position = CGPointMake(CGRectGetMaxX(self.frame), CGRectGetMidY(self.frame) + pipeUpTexture.size().height / 2.0 + gapHeight / 2.0 + pipeOffset)
         self.pipeUp.runAction(moveAndRemovePipes)
+        self.pipeUp.physicsBody = SKPhysicsBody(rectangleOfSize: pipeUpTexture.size())
+        self.pipeUp.physicsBody!.dynamic = false
+        
+        // Collision setup.
+        self.pipeUp.physicsBody!.categoryBitMask = ColliderType.object.rawValue
+        self.pipeUp.physicsBody!.contactTestBitMask = ColliderType.object.rawValue
+        self.pipeUp.physicsBody!.collisionBitMask = ColliderType.object.rawValue
         
         self.addChild(pipeUp)
         
@@ -131,7 +165,28 @@ class GameScene: SKScene {
         self.pipeDown = SKSpriteNode(texture: pipeDownTexture)
         self.pipeDown.position = CGPointMake(CGRectGetMaxX(self.frame), CGRectGetMidY(self.frame) - pipeDownTexture.size().height / 2.0 - gapHeight / 2.0 + pipeOffset)
         self.pipeDown.runAction(moveAndRemovePipes)
+        self.pipeDown.physicsBody = SKPhysicsBody(rectangleOfSize: pipeUpTexture.size())
+        self.pipeDown.physicsBody!.dynamic = false
+        
+        // Collision setup.
+        self.pipeDown.physicsBody!.categoryBitMask = ColliderType.object.rawValue
+        self.pipeDown.physicsBody!.contactTestBitMask = ColliderType.object.rawValue
+        self.pipeDown.physicsBody!.collisionBitMask = ColliderType.object.rawValue
         
         self.addChild(pipeDown)
+    }
+}
+
+//-----------------------------------
+// MARK: - SKPhysicsContactDelegate -
+//-----------------------------------
+
+extension GameScene: SKPhysicsContactDelegate {
+    func didBeginContact(contact: SKPhysicsContact) {
+        print("We have contact!!!")
+        
+        self.gameOver = true
+        
+        self.speed = 0.0
     }
 }
